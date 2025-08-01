@@ -1,14 +1,14 @@
 [versions]
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 compose-plugin = "1.8.2"
-sprintBoot = "3.5.0"
+sprintBoot = "3.5.4"
 antlr = "4.13.2"
 logback = "1.5.18"
 splitpane = "1.8.2"
 kotlinx-coroutines = "1.10.2"
-kotlinx-serialization = "1.8.1"
-ktor = "3.2.0"
-junit = "5.13.1"
+kotlinx-serialization = "1.9.0"
+ktor = "3.2.3"
+junit = "5.13.4"
 
 [libraries]
 antlr = { group = "org.antlr", name = "antlr4", version.ref = "antlr" }
