@@ -1,5 +1,6 @@
 package com.kube.log.ui.compose.list
 
+import androidx.compose.runtime.Stable
 import com.kube.log.model.PodInfo
 import com.kube.log.service.PodService
 import com.kube.log.service.search.SearchQueryCompilerService
@@ -9,6 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@Stable
 class PodListState(private val coroutineScope: CoroutineScope) {
     private var monitorJob: Job? = null
     val state = MutableStateFlow<LoadableResult<Unit>>(LoadableResult.Loading)

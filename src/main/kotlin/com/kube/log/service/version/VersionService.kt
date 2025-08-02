@@ -1,7 +1,9 @@
 package com.kube.log.service.version
 
+import androidx.compose.runtime.Immutable
 import com.kube.log.util.RegexUtils.getOrNull
 
+@Immutable
 data class VersionHolder(val table: List<Int>): Comparable<VersionHolder> {
     override fun compareTo(other: VersionHolder): Int {
         var i = 0

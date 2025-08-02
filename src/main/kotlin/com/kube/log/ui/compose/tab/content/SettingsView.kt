@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.VerticalAlignBottom
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,6 +22,7 @@ import com.kube.log.ui.compose.component.shortcut.TOGGLE_SEARCH_SHORTCUT
 import com.kube.log.ui.compose.component.theme.ThemeProvider
 import com.kube.log.ui.compose.tab.content.search.SearchState
 
+@Stable
 class SettingsState {
     var autoscroll by mutableStateOf(true)
     var isWrap by mutableStateOf(true)

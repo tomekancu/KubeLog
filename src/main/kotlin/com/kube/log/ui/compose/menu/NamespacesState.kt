@@ -1,9 +1,11 @@
 package com.kube.log.ui.compose.menu
 
+import androidx.compose.runtime.Stable
 import com.kube.log.service.NamespaceService
 import com.kube.log.util.LoadableResult
 import kotlinx.coroutines.flow.MutableStateFlow
 
+@Stable
 class NamespacesState {
     val state = MutableStateFlow<LoadableResult<Unit>>(LoadableResult.Loading)
     val namespaces = MutableStateFlow(listOf<String>())

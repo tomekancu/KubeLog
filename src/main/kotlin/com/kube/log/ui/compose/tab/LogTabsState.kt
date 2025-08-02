@@ -2,6 +2,7 @@ package com.kube.log.ui.compose.tab
 
 import androidx.compose.runtime.*
 
+@Stable
 class LogTabsState {
     var selection by mutableStateOf(0)
         private set

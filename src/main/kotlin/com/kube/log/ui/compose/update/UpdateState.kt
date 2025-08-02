@@ -1,5 +1,7 @@
 package com.kube.log.ui.compose.update
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,12 +12,14 @@ import com.kube.log.service.version.VersionService
 import com.kube.log.service.version.github.GithubClientService
 import com.kube.log.service.version.github.Release
 
+@Immutable
 data class UpdateData(
     val release: Release,
     val newestVersion: VersionHolder,
     val localVersion: VersionHolder
 )
 
+@Stable
 class UpdateState {
     private var isDialogVisible by mutableStateOf(true)
     private var updateData by mutableStateOf<UpdateData?>(null)

@@ -1,5 +1,6 @@
 package com.kube.log.model
 
+import androidx.compose.runtime.Immutable
 import com.kube.log.util.JsonElementUtils.asBoolean
 import com.kube.log.util.JsonElementUtils.asInt
 import com.kube.log.util.JsonElementUtils.asText
@@ -11,6 +12,7 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import java.time.Instant
 
+@Immutable
 data class PodInfo(
     val uid: String,
     val name: String,

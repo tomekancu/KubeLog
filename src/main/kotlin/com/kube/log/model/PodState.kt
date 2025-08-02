@@ -1,5 +1,8 @@
 package com.kube.log.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 sealed class PodState {
     abstract fun short(): String
     abstract fun long(): String

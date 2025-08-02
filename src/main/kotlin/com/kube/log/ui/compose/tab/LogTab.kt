@@ -1,6 +1,7 @@
 package com.kube.log.ui.compose.tab
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import com.kube.log.model.PodInfo
 import com.kube.log.service.PodLogService
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.*
 import kotlin.math.max
 import kotlin.math.min
 
+@Stable
 class LogTab(initialPodInfo: PodInfo, private val tailLogs: Boolean, parentScope: CoroutineScope,
              allListFlow: Flow<List<PodInfo>>) {
     companion object {

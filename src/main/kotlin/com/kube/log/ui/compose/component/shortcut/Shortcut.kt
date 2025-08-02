@@ -1,7 +1,9 @@
 package com.kube.log.ui.compose.component.shortcut
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.input.key.*
 
+@Immutable
 class Shortcut(private val keys: List<Key>) {
     fun match(event: KeyEvent): Boolean {
         return keys.all {

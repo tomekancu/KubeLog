@@ -1,5 +1,6 @@
 package com.kube.log.ui.compose.tab.content.search
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,7 @@ enum class SearchType {
     FILTER, MARK,
 }
 
+@Stable
 class SearchState {
     var isVisible by mutableStateOf(false)
     var text by mutableStateOf("")

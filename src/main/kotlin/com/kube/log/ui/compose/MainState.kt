@@ -1,5 +1,6 @@
 package com.kube.log.ui.compose
 
+import androidx.compose.runtime.Stable
 import com.kube.log.model.PodInfo
 import com.kube.log.ui.compose.list.PodListState
 import com.kube.log.ui.compose.menu.NamespacesState
@@ -13,6 +14,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Stable
 class MainState(private val coroutineScope: CoroutineScope) {
     val tailLogs = MutableStateFlow(true)
     val podListVisible = MutableStateFlow(true)
