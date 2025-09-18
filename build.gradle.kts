@@ -1,3 +1,4 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -41,7 +42,8 @@ dependencies {
     implementation(compose.desktop.macos_arm64)
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
-    implementation(libs.compose.components.splitpane)
+    @OptIn(ExperimentalComposeLibrary::class)
+    implementation(compose.desktop.components.splitPane)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.core.jvm)
@@ -82,6 +84,10 @@ tasks.generateGrammarSource {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<BootJar> {
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 tasks.withType<KotlinCompile> {
