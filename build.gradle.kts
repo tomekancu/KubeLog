@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "com.kube.log"
-version = "1.6.2"
+version = "1.6.3"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
