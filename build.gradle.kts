@@ -1,4 +1,3 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -38,12 +37,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation(compose.desktop.macos_x64)
-    implementation(compose.desktop.macos_arm64)
-    implementation(compose.material3)
-    implementation(compose.materialIconsExtended)
-    @OptIn(ExperimentalComposeLibrary::class)
-    implementation(compose.desktop.components.splitPane)
+    implementation(libs.compose.desktop.macos.x64)
+    implementation(libs.compose.desktop.macos.arm64)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.components.splitpane)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.core.jvm)
