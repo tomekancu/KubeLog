@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "com.kube.log"
-version = "1.6.3"
+version = "1.6.4"
 
 repositories {
     mavenCentral()
