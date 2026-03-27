@@ -1,14 +1,14 @@
 [versions]
-kotlin = "2.3.0"
+kotlin = "2.3.20"
 compose-plugin = "1.10.3"
 material3 = "1.9.0"
 material-icons-extended = "1.7.3"
-sprintBoot = "3.5.10"
+sprintBoot = "4.0.3"
 antlr = "4.13.2"
-logback = "1.5.30"
+logback = "1.5.32"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0"
-ktor = "3.4.0"
+ktor = "3.4.1"
 junit = "6.0.3"
 
 [libraries]
