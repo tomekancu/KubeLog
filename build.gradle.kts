@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo
@@ -17,12 +16,14 @@ plugins {
 group = "com.kube.log"
 version = "1.6.3"
 
-java.sourceCompatibility = JavaVersion.VERSION_21
-
 repositories {
     mavenCentral()
     google()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {
@@ -92,10 +93,6 @@ tasks.withType<KotlinCompile> {
     dependsOn(tasks.withType<BuildInfo>())
     dependsOn(tasks.generateGrammarSource)
     dependsOn(tasks.generateTestGrammarSource)
-    compilerOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = JvmTarget.JVM_21
-    }
 }
 
 tasks.register("version") {
