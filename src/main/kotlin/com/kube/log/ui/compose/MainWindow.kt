@@ -39,7 +39,7 @@ fun MainWindow(exitApplication: () -> Unit) {
         onCloseRequest = exitApplication,
         state = rememberWindowState(size = DpSize(900.dp, 600.dp)),
         title = title,
-        icon = painterResource("AppIcon.png"),
+        icon = painterResource("AppIcon.svg"),
         onPreviewKeyEvent = {
             if (it.type != KeyEventType.KeyDown) {
                 return@Window false

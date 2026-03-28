@@ -23,7 +23,7 @@ fun NotificationCenterProvider(
     content: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val icon = painterResource("AppIcon.png")
+    val icon = painterResource("AppIcon.svg")
     val localDensity = LocalDensity.current
     val trayIcon = remember {
         val image = icon.toAwtImage(localDensity, LayoutDirection.Ltr, Size(16f, 16f))
