@@ -38,8 +38,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation(libs.compose.desktop.macos.x64)
-    implementation(libs.compose.desktop.macos.arm64)
+    implementation(compose.desktop.currentOs)
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.components.splitpane)

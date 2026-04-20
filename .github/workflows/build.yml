@@ -3,10 +3,18 @@ on:
   push:
     branches:
       - main
+
 jobs:
-  macos:
-    runs-on: macos-latest
+  build:
     if: "startsWith(github.event.head_commit.message, 'Release: ')"
+    strategy:
+      matrix:
+        include:
+          - runner: macos-26-intel
+            arch: intel
+          - runner: macos-26
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
       - name: Setup Java JDK
@@ -14,7 +22,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - name: Run all test
+      - name: Run all tests
         run: ./gradlew test
       - name: Install the Apple certificate
         env:
@@ -37,8 +45,32 @@ jobs:
           # import certificate to keychain
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH login.keychain-db
-      - name: Create app bundle with Gradle
+      - name: Create app bundle with Gradle (${{ matrix.arch }})
         run: ./gradlew creatAppBundle
+      - run: mv ./build/app/KubeLog.pkg ./build/app/KubeLog-${{ matrix.arch }}.pkg
+      - name: Upload artifact (${{ matrix.arch }})
+        uses: actions/upload-artifact@v7
+        with:
+          name: kubelog-installer-${{ matrix.arch }}
+          path: ./build/app/KubeLog-${{ matrix.arch }}.pkg
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Java JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          pattern: kubelog-installer-*
+          path: ./artifacts
+          merge-multiple: true
       - name: Get app version
         id: app_version
         run: echo "APP_VERSION=$(./gradlew version --no-daemon --console=plain -q | tail -n 1)" >> $GITHUB_OUTPUT
@@ -53,4 +85,5 @@ jobs:
           gh release create "v$APP_VERSION" \
             -t "Release v$APP_VERSION" \
             --generate-notes \
-            './build/app/KubeLog.pkg#KubeLog-installer-mac.pkg'
+            './artifacts/KubeLog-intel.pkg#KubeLog-installer-mac-intel.pkg' \
+            './artifacts/KubeLog-arm64.pkg#KubeLog-installer-mac-arm64.pkg'
