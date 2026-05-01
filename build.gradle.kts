@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo
-import org.springframework.boot.gradle.tasks.bundling.BootJar
+import org.gradle.jvm.tasks.Jar
+import java.time.Instant
 
 plugins {
     antlr
@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 
-    alias(libs.plugins.springBoot)
     alias(libs.plugins.jetbrainsCompose)
 }
 
@@ -71,9 +70,15 @@ composeCompiler {
     metricsDestination = layout.buildDirectory.dir("compose_compiler")
 }
 
-springBoot {
-    mainClass.set("com.kube.log.MainKt")
-    buildInfo()
+tasks.processResources {
+    inputs.property("group", project.group)
+    inputs.property("name", project.name)
+    inputs.property("version", project.version)
+    inputs.property("time", Instant.now())
+
+    filesMatching("**/*.properties") {
+        expand(inputs.properties)
+    }
 }
 
 tasks.generateGrammarSource {
@@ -84,12 +89,7 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<BootJar> {
-    duplicatesStrategy = DuplicatesStrategy.WARN
-}
-
 tasks.withType<KotlinCompile> {
-    dependsOn(tasks.withType<BuildInfo>())
     dependsOn(tasks.generateGrammarSource)
     dependsOn(tasks.generateTestGrammarSource)
 }
@@ -103,8 +103,8 @@ tasks.register("version") {
 tasks.register("creatAppBundle") {
     group = "build"
     val projectName = project.name
-    val bootJarTask = tasks.withType<BootJar>()
-    dependsOn(bootJarTask)
+    val packageUberJarForCurrentOS = tasks.getByName("packageUberJarForCurrentOS", Jar::class)
+    dependsOn(packageUberJarForCurrentOS)
     doLast {
         val srcAppDir = layout.projectDirectory.dir("src/main/app").asFile
         delete(temporaryDir)
@@ -121,7 +121,7 @@ tasks.register("creatAppBundle") {
         }
 
         val macOsDir = contentsDir.resolve("MacOS")
-        val jarFile = bootJarTask.map { it.outputs.files.singleFile }.first()
+        val jarFile = packageUberJarForCurrentOS.outputs.files.singleFile
         copy {
             from(jarFile)
             into(macOsDir)
