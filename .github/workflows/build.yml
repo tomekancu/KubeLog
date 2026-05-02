@@ -46,13 +46,13 @@ jobs:
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH login.keychain-db
       - name: Create app bundle with Gradle (${{ matrix.arch }})
-        run: ./gradlew creatAppBundle
-      - run: mv ./build/app/KubeLog.pkg ./build/app/KubeLog-${{ matrix.arch }}.pkg
+        run: ./gradlew packageDistributionForCurrentOS
+      - run: mv ./build/compose/binaries/main/dmg/KubeLog*.dmg ./build/compose/binaries/main/dmg/KubeLog-${{ matrix.arch }}.dmg
       - name: Upload artifact (${{ matrix.arch }})
         uses: actions/upload-artifact@v7
         with:
           name: kubelog-installer-${{ matrix.arch }}
-          path: ./build/app/KubeLog-${{ matrix.arch }}.pkg
+          path: ./build/compose/binaries/main/dmg/KubeLog-${{ matrix.arch }}.dmg
           retention-days: 1
 
   release:
@@ -85,5 +85,5 @@ jobs:
           gh release create "v$APP_VERSION" \
             -t "Release v$APP_VERSION" \
             --generate-notes \
-            './artifacts/KubeLog-intel.pkg#KubeLog-installer-mac-intel.pkg' \
-            './artifacts/KubeLog-arm64.pkg#KubeLog-installer-mac-arm64.pkg'
+            './artifacts/KubeLog-intel.dmg#KubeLog-installer-mac-intel.dmg' \
+            './artifacts/KubeLog-arm64.dmg#KubeLog-installer-mac-arm64.dmg'

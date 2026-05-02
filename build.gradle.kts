@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.gradle.jvm.tasks.Jar
 import java.time.Instant
 
 plugins {
@@ -59,8 +58,16 @@ compose.desktop {
         mainClass = "com.kube.log.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg)
-            packageName = project.name
-            packageVersion = project.version.toString()
+
+            macOS {
+                bundleID = "com.KubeLog"
+                iconFile.set(project.file("src/main/app/AppIcon.icns"))
+
+                signing {
+                    sign.set(true)
+                    identity.set("Developer ID Application: Code Signing Certificate")
+                }
+            }
         }
     }
 }
@@ -95,82 +102,8 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.register("version") {
+    description = "Prints the project version"
     doLast {
         println(version)
-    }
-}
-
-tasks.register("creatAppBundle") {
-    group = "build"
-    val projectName = project.name
-    val packageUberJarForCurrentOS = tasks.getByName("packageUberJarForCurrentOS", Jar::class)
-    dependsOn(packageUberJarForCurrentOS)
-    doLast {
-        val srcAppDir = layout.projectDirectory.dir("src/main/app").asFile
-        delete(temporaryDir)
-        val tempDstDir = temporaryDir.toPath().resolve("dst")
-        mkdir(tempDstDir)
-
-        // create app
-        val tempAppDir = tempDstDir.resolve("$projectName.app")
-        val contentsDir = tempAppDir.resolve("Contents")
-
-        copy {
-            from(srcAppDir.resolve("Contents"))
-            into(contentsDir)
-        }
-
-        val macOsDir = contentsDir.resolve("MacOS")
-        val jarFile = packageUberJarForCurrentOS.outputs.files.singleFile
-        copy {
-            from(jarFile)
-            into(macOsDir)
-            rename(jarFile.name, "KubeLog.jar")
-        }
-        providers.exec {
-            workingDir(macOsDir)
-            commandLine("chmod", "+x", "./run_kubelog")
-        }.result.get()
-        providers.exec {
-            workingDir(tempDstDir)
-            commandLine("codesign", "-f", "--deep",
-                "--entitlements", srcAppDir.resolve("java.entitlements"),
-                "-s", "Code Signing Certificate", tempAppDir)
-        }.result.get()
-
-        // create temp pkg
-        val tempPkgDir = temporaryDir.resolve("temp.pkg")
-        providers.exec {
-            workingDir(temporaryDir)
-            commandLine("pkgbuild",
-                "--install-location", "/Applications",
-                "--identifier", "com.KubeLog",
-                "--root", tempDstDir,
-                "--component-plist", srcAppDir.resolve("component.plist"),
-                tempPkgDir)
-        }.result.get()
-
-        // output path
-        val buildAppDir = layout.buildDirectory.dir("app").get().asFile
-        delete(buildAppDir)
-        mkdir(buildAppDir)
-
-        // copy app
-        copy {
-            from(tempAppDir) {
-                into("KubeLog.app")
-            }
-            into(buildAppDir)
-        }
-
-        // create pkg
-        providers.exec {
-            workingDir(buildAppDir)
-            commandLine("productbuild",
-                "--package", tempPkgDir,
-                "--product", srcAppDir.resolve("requirements.plist"),
-                "--cert", "Code Signing Certificate",
-                buildAppDir.resolve("$projectName.pkg"))
-        }.result.get()
     }
 }

@@ -2,9 +2,6 @@
 
 ## Installation
 
-Pkg installs application in `/Applications` by default. You can change it to `$HOME/Applications` during
-installation.
-
 When you see "unidentified developer" error,
 open installer in `System Settings` > `Privacy & Security` > `Security` > `Open anyway`
 
