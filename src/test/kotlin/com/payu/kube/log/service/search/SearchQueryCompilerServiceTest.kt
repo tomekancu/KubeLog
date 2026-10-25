@@ -2,6 +2,7 @@ package com.kube.log.service.search
 
 import com.kube.log.service.search.query.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -15,6 +16,15 @@ internal class SearchQueryCompilerServiceTest {
 
         assertLinesMatch(listOf(), compileQuery.errors)
         assertEquals(expectedQuery, compileQuery.query)
+    }
+
+    @Test
+    fun shouldReportInvalidRegex() {
+        val compileQuery = SearchQueryCompilerService.compile("foo AND r\"[0-9\"")
+
+        assertEquals(1, compileQuery.errors.size)
+        assertTrue(compileQuery.errors[0].startsWith("1:8 bad regex:"))
+        assertEquals(TextQuery("foo AND r\"[0-9\"", true), compileQuery.query)
     }
 
     companion object {

@@ -4,7 +4,8 @@ import com.kube.log.search.query.SearchQueryBaseVisitor
 import com.kube.log.search.query.SearchQueryParser
 import com.kube.log.service.search.query.*
 
-class SearchQueryVisitor: SearchQueryBaseVisitor<Query?>() {
+class SearchQueryVisitor : SearchQueryBaseVisitor<Query?>() {
+    val errors = mutableListOf<String>()
 
     override fun visitFullQuery(ctx: SearchQueryParser.FullQueryContext?): Query? {
         return ctx?.query()?.let { visit(it) }
@@ -60,7 +61,9 @@ class SearchQueryVisitor: SearchQueryBaseVisitor<Query?>() {
             if ('i' in flags) add(RegexOption.IGNORE_CASE)
             if ('c' in flags) add(RegexOption.IGNORE_CASE)
         }
-        val regex = runCatching { text.toRegex(options) }.getOrNull() ?: return null
+        val regex = runCatching { text.toRegex(options) }
+            .onFailure { errors.add("${ctx.start.line}:${ctx.start.charPositionInLine} bad regex: ${it.message}") }
+            .getOrNull() ?: return null
         return RegexQuery(regex)
     }
 }

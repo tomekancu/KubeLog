@@ -37,7 +37,7 @@ object PodLogService {
             suspendCancellableCoroutine<Unit> { continuation ->
                 log.info("start pod monitoring ${pod.name}")
                 val command = mutableListOf(
-                    "/usr/local/bin/kubectl", "--namespace", pod.namespace,
+                    Kubectl.path, "--namespace", pod.namespace,
                     "logs", "-f", pod.name
                 )
                 tail?.let { command.add("--tail=$it") }

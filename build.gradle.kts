@@ -17,7 +17,6 @@ version = "1.6.8"
 repositories {
     mavenCentral()
     google()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 kotlin {
@@ -25,7 +24,6 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation(libs.logback.classic)
@@ -42,7 +40,6 @@ dependencies {
     implementation(libs.compose.components.splitpane)
 
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.core.jvm)
     implementation(libs.kotlinx.coroutines.swing)
 
     implementation(libs.kotlinx.serialization.json)

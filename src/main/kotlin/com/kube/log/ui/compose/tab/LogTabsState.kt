@@ -26,7 +26,11 @@ class LogTabsState {
 
     fun close(logTab: LogTab) {
         logTab.destroy()
+        val index = tabs.indexOf(logTab)
         tabs.remove(logTab)
+        if (index in 0 until selection) {
+            selection--
+        }
         selection = selection.coerceAtMost(tabs.lastIndex)
     }
 

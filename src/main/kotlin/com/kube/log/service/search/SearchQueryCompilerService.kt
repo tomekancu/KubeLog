@@ -21,13 +21,15 @@ object SearchQueryCompilerService {
         parser.addErrorListener(errorListener)
 
         val root = parser.fullQuery()
-        val value = SearchQueryVisitor().visit(root)
+        val visitor = SearchQueryVisitor()
+        val value = visitor.visit(root)
+        val errors = errorListener.errors + visitor.errors
 
-        val query = value?.takeIf { errorListener.errors.isEmpty() } ?: TextQuery(text, true)
+        val query = value?.takeIf { errors.isEmpty() } ?: TextQuery(text, true)
 
         return CompileQueryResult(
             query,
-            errorListener.errors
+            errors
         )
     }
 

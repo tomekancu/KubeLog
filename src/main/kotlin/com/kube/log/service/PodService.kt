@@ -59,24 +59,21 @@ object PodService {
         suspendCancellableCoroutine { continuation ->
             log.info("Start read all pods")
             val p = ProcessBuilder(
-                "/usr/local/bin/kubectl", "--namespace", namespace,
+                Kubectl.path, "--namespace", namespace,
                 "get", "pods", "-o", "json"
             )
-                .redirectErrorStream(true)
                 .start()
             continuation.invokeOnCancellation {
                 p.destroy()
             }
-            val reader = p.inputStream.bufferedReader()
 
-            val output = reader.use {
-                it.readText()
-            }
+            val output = p.inputStream.bufferedReader().use { it.readText() }
+            val errorOutput = p.errorStream.bufferedReader().use { it.readText() }
 
             val exitValue = p.waitFor()
             log.info("Stop read all pods $exitValue")
             if (exitValue != 0 || output.isEmpty()) {
-                continuation.resumeWithException(IllegalStateException("No data\nexit code: $exitValue"))
+                continuation.resumeWithException(IllegalStateException("No data\n$errorOutput\nexit code: $exitValue"))
                 return@suspendCancellableCoroutine
             }
 
@@ -107,10 +104,10 @@ object PodService {
             suspendCancellableCoroutine { continuation ->
                 log.info("Start watch pods")
                 val p = ProcessBuilder(
-                    "/usr/local/bin/kubectl", "--namespace", namespace,
+                    Kubectl.path, "--namespace", namespace,
                     "get", "pods", "-o", "json", "--watch"
                 )
-                    .redirectErrorStream(true)
+                    .redirectError(ProcessBuilder.Redirect.DISCARD)
                     .start()
                 continuation.invokeOnCancellation {
                     p.destroy()
