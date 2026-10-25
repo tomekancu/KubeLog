@@ -89,7 +89,8 @@ tasks.processResources {
 }
 
 tasks.generateGrammarSource {
-    arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.kube.log.search.query")
+    packageName = "com.kube.log.search.query"
+    arguments = arguments + listOf("-visitor", "-long-messages")
 }
 
 tasks.withType<Test> {
