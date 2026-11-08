@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import kotlin.coroutines.resume
+import kotlin.time.Duration.Companion.milliseconds
 
 object PodLogService {
     private val log = logger()
@@ -28,13 +30,13 @@ object PodLogService {
             podFlow.value.creationTimestamp.plus(15, ChronoUnit.MINUTES).isAfter(Instant.now())
             && podFlow.value.state is PodState.Waiting
         ) {
-            delay(100)
+            delay(100.milliseconds)
         }
     }
 
     private suspend fun readLogsSuspending(pod: PodInfo, tail: Int?, onNewLine: (String) -> Boolean) =
         withContext(Dispatchers.IO) {
-            suspendCancellableCoroutine<Unit> { continuation ->
+            suspendCancellableCoroutine { continuation ->
                 log.info("start pod monitoring ${pod.name}")
                 val command = mutableListOf(
                     Kubectl.path, "--namespace", pod.namespace,
@@ -72,6 +74,8 @@ object PodLogService {
                 onNewLine("terminated with code: $exitValue")
 
                 log.info("stop pod monitoring ${pod.name} - $exitValue")
+
+                continuation.resume(Unit)
             }
         }
 }

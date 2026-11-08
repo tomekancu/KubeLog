@@ -8,7 +8,7 @@ import com.kube.log.service.PodLogService
 import com.kube.log.ui.compose.tab.content.search.SearchState
 import com.kube.log.ui.compose.tab.content.search.SearchType
 import com.kube.log.ui.compose.tab.content.SettingsState
-import com.kube.log.util.FlowUtils.debounceWithCache
+import com.kube.log.util.FlowUtils.batched
 import com.kube.log.util.Item
 import com.kube.log.util.ShowMoreAfterItem
 import com.kube.log.util.ShowMoreBeforeItem
@@ -17,6 +17,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 @Stable
 class LogTab(initialPodInfo: PodInfo, private val tailLogs: Boolean, parentScope: CoroutineScope,
@@ -63,7 +64,7 @@ class LogTab(initialPodInfo: PodInfo, private val tailLogs: Boolean, parentScope
 
         val tail = if (tailLogs) 1000 else null
         PodLogService.watchingLogsSuspending(podInfoState, tail)
-            .debounceWithCache(50)
+            .batched(50.milliseconds)
             .filter { it.isNotEmpty() }
             .buffer()
             .flowOn(Dispatchers.IO)

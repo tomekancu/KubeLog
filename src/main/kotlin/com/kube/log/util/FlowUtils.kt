@@ -1,13 +1,14 @@
 package com.kube.log.util
 
-import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.time.Duration
 
 object FlowUtils {
     fun <T, R> Flow<T>.zipWithNext(transform: (T?, T) -> R): Flow<R> = flow {
@@ -18,32 +19,25 @@ object FlowUtils {
         }
     }
 
-    fun <T> Flow<T>.debounceWithCache(timeout: Long): Flow<List<T>> = channelFlow {
-        val list = mutableListOf<T>()
-        val listMutex = Mutex()
+    fun <T> Flow<T>.batched(window: Duration): Flow<List<T>> = channelFlow {
+        val buffer = mutableListOf<T>()
+        val mutex = Mutex()
 
-        val collectJob = async {
-            collect { value ->
-                listMutex.withLock {
-                    list.add(value)
-                }
+        suspend fun flush() = mutex.withLock {
+            if (buffer.isNotEmpty()) {
+                send(buffer.toList())
+                buffer.clear()
             }
         }
 
-        val emitJob = async {
-            while (isActive) {
-                val listToEmit = listMutex.withLock {
-                    val l = list.toList()
-                    list.clear()
-                    l
-                }
-
-                send(listToEmit)
-                delay(timeout)
+        val ticker = launch {
+            while (true) {
+                delay(window)
+                flush()
             }
         }
-
-        collectJob.await()
-        emitJob.await()
+        collect { mutex.withLock { buffer += it } }
+        ticker.cancelAndJoin()
+        flush()
     }
 }
